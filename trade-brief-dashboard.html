@@ -1,0 +1,662 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" href="data:," />
+    <title>Trade Brief Dashboard — Canada's Trade Wake-Up Call</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:ital,wght@0,400;0,600;0,700;0,800;0,900;1,400&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet" />
+    <style>
+      :root{
+        color-scheme: light dark;
+        --bg:#f4f3f0;
+        --card:#ffffff;
+        --card-2:#faf9f7;
+        --ink:#191c20;
+        --muted:#5b616b;
+        --faint:#8a9099;
+        --line:#e2ded6;
+        --line-strong:#cfccc2;
+        --red:#b3271e;
+        --red-soft:#fbeae8;
+        --teal:#14655a;
+        --teal-soft:#e6f2ef;
+        --green:#1e7a46;
+        --green-soft:#e7f3ec;
+        --amber:#8a5c00;
+        --amber-soft:#faf0d7;
+        --gray-bar:#9aa0a8;
+        --shadow:0 1px 2px rgba(25,28,32,.05),0 8px 24px -12px rgba(25,28,32,.12);
+      }
+      @media (prefers-color-scheme: dark){
+        :root{
+          --bg:#121418;
+          --card:#1c1f24;
+          --card-2:#171a1e;
+          --ink:#eceef1;
+          --muted:#a7adb8;
+          --faint:#7d838e;
+          --line:#2c3038;
+          --line-strong:#3a3f49;
+          --red:#e5604f;
+          --red-soft:#3a2320;
+          --teal:#45b3a1;
+          --teal-soft:#1d2f2c;
+          --green:#4cc07e;
+          --green-soft:#1d2f26;
+          --amber:#e0aa3e;
+          --amber-soft:#33290f;
+          --gray-bar:#6e757f;
+          --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px -12px rgba(0,0,0,.5);
+        }
+      }
+      *{box-sizing:border-box}
+      html{-webkit-text-size-adjust:100%}
+      body{
+        margin:0;
+        background:var(--bg);
+        color:var(--ink);
+        font-family:"Libre Franklin",system-ui,-apple-system,"Segoe UI",sans-serif;
+        font-size:17px;
+        line-height:1.5;
+      }
+      .wrap{max-width:1180px;margin:0 auto;padding:28px 20px 40px}
+      .mono{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums}
+
+      /* ---------- Masthead ---------- */
+      .masthead{border-bottom:3px solid var(--ink);padding-bottom:18px;margin-bottom:8px}
+      .series-line{
+        display:flex;flex-wrap:wrap;gap:6px 14px;align-items:baseline;
+        font-size:13px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);
+      }
+      .series-line .brand{color:var(--red)}
+      h1{
+        margin:10px 0 8px;font-size:clamp(34px,5.4vw,56px);line-height:1.04;
+        font-weight:900;letter-spacing:-.015em;
+      }
+      .lede{margin:0;max-width:46em;font-size:clamp(17px,2vw,20px);color:var(--muted)}
+      .lede strong{color:var(--ink)}
+
+      section{margin-top:40px}
+      .section-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 16px;margin-bottom:16px}
+      .section-head h2{margin:0;font-size:clamp(22px,3vw,30px);font-weight:800;letter-spacing:-.01em}
+      .section-head p{margin:0;color:var(--muted);font-size:15.5px}
+
+      /* ---------- KPI cards ---------- */
+      .kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:14px}
+      .kpi{
+        background:var(--card);border:1px solid var(--line);border-radius:10px;
+        padding:18px 18px 16px;box-shadow:var(--shadow);
+        display:flex;flex-direction:column;gap:8px;min-width:0;
+      }
+      .kpi.wide{grid-column:span 2}
+      .kpi.half{grid-column:span 3}
+      .kpi .k-label{font-size:12.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+      .kpi .k-big{font-size:clamp(34px,3.4vw,44px);font-weight:900;line-height:1;letter-spacing:-.02em}
+      .kpi .k-big.neg{color:var(--red)}
+      .kpi .k-sub{font-size:15px;color:var(--muted);margin:0}
+      .kpi .k-sub strong{color:var(--ink)}
+      .chips{display:flex;flex-wrap:wrap;gap:6px}
+      .chip{
+        font-family:"IBM Plex Mono",monospace;font-size:13.5px;font-weight:600;
+        padding:3px 9px;border-radius:999px;background:var(--card-2);border:1px solid var(--line);
+      }
+      .chip.neg{background:var(--red-soft);border-color:transparent;color:var(--red)}
+      .chip.pos{background:var(--green-soft);border-color:transparent;color:var(--green)}
+      .chip .chip-when{font-family:"Libre Franklin",sans-serif;font-weight:600;font-size:12px;opacity:.75;margin-right:5px;letter-spacing:.04em;text-transform:uppercase}
+      .viz{margin-top:auto;padding-top:6px}
+      .viz-note{font-size:12px;color:var(--faint);margin-top:6px;line-height:1.45}
+      svg{display:block;max-width:100%}
+
+      /* truck bars */
+      .trow{display:grid;grid-template-columns:118px 1fr 58px;align-items:center;gap:10px;margin:7px 0}
+      .trow .t-who{font-size:13.5px;font-weight:600;color:var(--muted);text-align:right;line-height:1.25}
+      .trow .t-who b{color:var(--ink);font-weight:700}
+      .t-track{position:relative;height:20px;border-left:2px solid var(--line-strong)}
+      .t-fill{position:absolute;top:3px;bottom:3px;right:0;border-radius:3px 0 0 3px}
+      .t-fill.ca{background:var(--red)}
+      .t-fill.mx{background:var(--gray-bar)}
+      .trow .t-val{font-family:"IBM Plex Mono",monospace;font-size:14px;font-weight:600}
+
+      /* unemployment scale */
+      .u-scale{position:relative;height:26px;margin-top:2px}
+      .u-track{position:absolute;left:0;right:0;top:8px;height:8px;border-radius:4px;background:var(--card-2);border:1px solid var(--line)}
+      .u-fill{position:absolute;left:0;top:8px;height:8px;border-radius:4px;background:var(--red)}
+      .u-ticks{position:absolute;left:0;right:0;top:19px;display:flex;justify-content:space-between;font-size:11px;color:var(--faint);font-family:"IBM Plex Mono",monospace}
+
+      /* donut */
+      .donut-row{display:flex;align-items:center;gap:16px}
+      .donut-wrap{position:relative;width:118px;height:118px;flex:none}
+      .donut-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+      .donut-center .dc-num{font-size:30px;font-weight:900;line-height:1}
+      .donut-center .dc-lab{font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-top:3px}
+
+      /* ---------- Big chart ---------- */
+      .chart-card{background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);padding:22px 22px 14px}
+      .chart-top{display:flex;flex-wrap:wrap;gap:14px 20px;align-items:flex-start;justify-content:space-between}
+      .chart-top h3{margin:0;font-size:clamp(20px,2.6vw,26px);font-weight:800;letter-spacing:-.01em}
+      .chart-top .chart-sub{margin:4px 0 0;color:var(--muted);font-size:15.5px;max-width:38em}
+      .toggle{display:inline-flex;background:var(--card-2);border:1px solid var(--line);border-radius:999px;padding:3px;gap:3px;flex:none}
+      .toggle button{
+        appearance:none;border:0;background:transparent;color:var(--muted);cursor:pointer;
+        font:inherit;font-size:14px;font-weight:700;padding:7px 14px;border-radius:999px;
+      }
+      .toggle button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+      .toggle button:focus-visible{outline:2px solid var(--red);outline-offset:2px}
+      .chart-box{position:relative;margin-top:10px}
+      .tooltip{
+        position:absolute;pointer-events:none;opacity:0;transition:opacity .12s ease;
+        background:var(--ink);color:var(--bg);border-radius:8px;padding:7px 11px;
+        font-size:13.5px;line-height:1.35;transform:translate(-50%,-130%);white-space:nowrap;z-index:3;
+      }
+      .tooltip .tt-when{font-size:11.5px;opacity:.75;font-weight:600;letter-spacing:.05em;text-transform:uppercase}
+      .tooltip .tt-val{font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:15px}
+      .chart-readout{display:flex;flex-wrap:wrap;gap:6px 22px;border-top:1px solid var(--line);margin-top:8px;padding:12px 2px 6px;font-size:14.5px;color:var(--muted)}
+      .chart-readout b{color:var(--ink)}
+      .src-note{font-size:12.5px;color:var(--faint);margin:8px 2px 4px}
+
+      /* ---------- Deal tracker ---------- */
+      .filters{display:inline-flex;flex-wrap:wrap;gap:6px}
+      .filters button{
+        appearance:none;cursor:pointer;font:inherit;font-size:13.5px;font-weight:700;
+        padding:6px 13px;border-radius:999px;border:1px solid var(--line-strong);
+        background:var(--card);color:var(--muted);
+      }
+      .filters button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+      .filters button:focus-visible{outline:2px solid var(--red);outline-offset:2px}
+      .deals{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+      .deal{
+        background:var(--card);border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow);
+        padding:18px;display:flex;flex-direction:column;gap:9px;transition:opacity .15s ease;
+      }
+      .deal.dim{opacity:.28}
+      .deal-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+      .deal h3{margin:0;font-size:21px;font-weight:800}
+      .pill{font-size:12px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;padding:4px 10px;border-radius:999px;flex:none}
+      .pill.done{background:var(--green-soft);color:var(--green)}
+      .pill.stuck{background:var(--red-soft);color:var(--red)}
+      .pill.talks{background:var(--amber-soft);color:var(--amber)}
+      .deal p{margin:0;font-size:15.5px;color:var(--muted)}
+      .deal p strong{color:var(--ink)}
+      .deal .deal-terms{font-family:"IBM Plex Mono",monospace;font-size:13px;color:var(--muted);border-top:1px dashed var(--line-strong);padding-top:9px;margin-top:auto}
+      .section-note{margin-top:14px;font-size:13.5px;color:var(--faint);font-style:italic}
+
+      /* ---------- Tariff panel ---------- */
+      .tariff{
+        background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);
+        display:grid;grid-template-columns:1fr 1.25fr;overflow:hidden;
+      }
+      .tariff-left{padding:24px;border-right:1px solid var(--line);display:flex;flex-direction:column;gap:20px}
+      .tariff-right{padding:24px;background:var(--card-2)}
+      .stat-pair{display:flex;flex-direction:column;gap:4px}
+      .stat-pair .sp-num{font-size:clamp(44px,5vw,64px);font-weight:900;line-height:.95;letter-spacing:-.02em}
+      .stat-pair .sp-num.red{color:var(--red)}
+      .stat-pair .sp-lab{font-size:15.5px;color:var(--muted);max-width:22em}
+      .stat-pair .sp-lab strong{color:var(--ink)}
+      .tariff-right h3{margin:0 0 4px;font-size:19px;font-weight:800}
+      .tariff-right .tr-sub{margin:0 0 16px;font-size:14.5px;color:var(--muted)}
+      .brow{display:grid;grid-template-columns:150px 1fr 62px;align-items:center;gap:12px;margin:12px 0}
+      .brow .b-lab{font-size:15px;font-weight:600}
+      .brow .b-lab span{display:block;font-size:12.5px;font-weight:400;color:var(--faint)}
+      .b-track{height:26px;background:var(--card);border:1px solid var(--line);border-radius:5px;position:relative}
+      .b-fill{position:absolute;left:0;top:0;bottom:0;border-radius:4px 0 0 4px;background:var(--red)}
+      .b-fill.alu{background:var(--gray-bar)}
+      .brow .b-val{font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:16px}
+      .brow.b-axis{margin:-4px 0 0}
+      .b-ticks{position:relative;height:14px;font-size:11px;color:var(--faint);font-family:"IBM Plex Mono",monospace}
+      .b-ticks span{position:absolute;transform:translateX(-50%)}
+      .b-ticks span:first-child{transform:none}
+      .b-ticks span:last-child{transform:none}
+      .jobs-stat{border-top:1px dashed var(--line-strong);margin-top:18px;padding-top:16px;display:flex;gap:16px;align-items:baseline;flex-wrap:wrap}
+      .jobs-stat .js-num{font-size:38px;font-weight:900;color:var(--red);line-height:1;letter-spacing:-.02em}
+      .jobs-stat .js-lab{font-size:15px;color:var(--muted);max-width:26em}
+      .jobs-stat .js-lab strong{color:var(--ink)}
+
+      footer{margin-top:44px;border-top:1px solid var(--line-strong);padding-top:14px;font-size:13px;color:var(--faint);line-height:1.55}
+
+      @media (max-width:1020px){
+        .kpis{grid-template-columns:repeat(2,1fr)}
+        .kpi.wide{grid-column:span 2}
+        .kpi.half{grid-column:span 1}
+        .deals{grid-template-columns:repeat(2,1fr)}
+      }
+      @media (max-width:680px){
+        .wrap{padding:20px 14px 32px}
+        .kpis{grid-template-columns:1fr}
+        .kpi.wide{grid-column:span 1}
+        .kpi.half{grid-column:span 1}
+        .deals{grid-template-columns:1fr}
+        .tariff{grid-template-columns:1fr}
+        .tariff-left{border-right:0;border-bottom:1px solid var(--line)}
+        .trow{grid-template-columns:96px 1fr 54px}
+        .brow{grid-template-columns:110px 1fr 56px}
+        .chart-card{padding:16px 12px 10px}
+      }
+      @media (prefers-reduced-motion: reduce){
+        *{transition:none !important;animation:none !important}
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header class="masthead">
+        <div class="series-line">
+          <span class="brand">Business Council of Canada</span>
+          <span>The Trade Brief · First Edition</span>
+          <span>April–June 2026</span>
+        </div>
+        <h1>Canada&rsquo;s trade wake-up call</h1>
+        <p class="lede">The first edition of the Brief, rebuilt as a dashboard: <strong>every headline number from the June 2026 edition, made explorable</strong> &mdash; the export slide, the quiet border, the diversification shift, and the state of play on trade deals around the world.</p>
+      </header>
+
+      <!-- ================= KPI CARDS ================= -->
+      <section aria-label="Headline indicators">
+        <div class="kpis">
+
+          <article class="kpi wide">
+            <div class="k-label">Canadian exports</div>
+            <div class="chips">
+              <span class="chip neg"><span class="chip-when">April</span>&minus;10.8%</span>
+              <span class="chip pos"><span class="chip-when">May</span>+1.1%</span>
+            </div>
+            <p class="k-sub">May&rsquo;s small recovery barely dents the damage. <strong>Exports to the U.S. are down 26.5%</strong> since the trade war began in early 2025.</p>
+            <div class="viz">
+              <svg id="spark" viewBox="0 0 320 84" role="img" aria-label="Sparkline of monthly Canadian exports, January 2025 to June 2026, Statistics Canada"></svg>
+              <div class="viz-note">Monthly exports, C$ billions, Jan 2025 &ndash; Jun 2026 &middot; StatCan table 12-10-0011-01</div>
+            </div>
+          </article>
+
+          <article class="kpi wide">
+            <div class="k-label">Border truck traffic</div>
+            <div class="viz" style="margin-top:0;padding-top:0">
+              <div class="trow">
+                <div class="t-who"><b>Canada</b> &middot; April</div>
+                <div class="t-track"><div class="t-fill ca" style="width:100%"></div></div>
+                <div class="t-val">&minus;11.4%</div>
+              </div>
+              <div class="trow">
+                <div class="t-who"><b>Canada</b> &middot; May</div>
+                <div class="t-track"><div class="t-fill ca" style="width:87.7%"></div></div>
+                <div class="t-val">&minus;10.0%</div>
+              </div>
+              <div class="trow">
+                <div class="t-who"><b>Mexico</b> &middot; April</div>
+                <div class="t-track"><div class="t-fill mx" style="width:24.6%"></div></div>
+                <div class="t-val">&minus;2.8%</div>
+              </div>
+            </div>
+            <p class="k-sub">Commercial trucks entering the U.S. Canadian exporters are being squeezed harder than Mexico&rsquo;s &mdash; and truck volume is a real-time read on trade: <strong>fewer trucks = fewer sales</strong>.</p>
+          </article>
+
+          <article class="kpi wide">
+            <div class="k-label">Manufacturing jobs</div>
+            <div class="k-big neg">&minus;54,000</div>
+            <p class="k-sub">Manufacturing jobs lost <strong>January to May</strong>. National unemployment hit <strong>7%</strong> &mdash; the highest since 2016, pandemic years excluded.</p>
+            <div class="viz">
+              <div class="u-scale" role="img" aria-label="Unemployment rate of 7 percent on a scale of 0 to 10 percent">
+                <div class="u-track"></div>
+                <div class="u-fill" style="width:70%"></div>
+                <div class="u-ticks"><span>0%</span><span>5%</span><span>10%</span></div>
+              </div>
+              <div class="viz-note">National unemployment rate &middot; 7.0%</div>
+            </div>
+          </article>
+
+          <article class="kpi half">
+            <div class="k-label">U.S. tariff haul</div>
+            <div class="k-big">US$81.5B</div>
+            <p class="k-sub">Tariffs collected by the U.S. since the trade war started &mdash; most of it from countries <strong>other than Canada</strong>.</p>
+          </article>
+
+          <article class="kpi half">
+            <div class="k-label">The CUSMA shield</div>
+            <div class="donut-row">
+              <div class="donut-wrap">
+                <svg viewBox="0 0 120 120" width="118" height="118" role="img" aria-label="Donut chart: 91 percent of Canadian exports to the U.S. are tariff-free under CUSMA">
+                  <circle cx="60" cy="60" r="50" fill="none" stroke="var(--line)" stroke-width="15"/>
+                  <circle cx="60" cy="60" r="50" fill="none" stroke="var(--teal)" stroke-width="15"
+                          stroke-dasharray="285.9 314.2" transform="rotate(-90 60 60)" stroke-linecap="butt"/>
+                </svg>
+                <div class="donut-center">
+                  <div class="dc-num">91%</div>
+                  <div class="dc-lab">tariff-free</div>
+                </div>
+              </div>
+              <p class="k-sub" style="margin:0">of Canadian exports to the U.S. still enter <strong>tariff-free under CUSMA</strong> &mdash; keeping some sectors afloat.</p>
+            </div>
+          </article>
+
+        </div>
+      </section>
+
+      <!-- ================= DIVERSIFICATION CHART ================= -->
+      <section aria-label="Diversification chart">
+        <div class="section-head">
+          <h2>The diversification shift</h2>
+          <p>Twenty-five years of dependence on one customer &mdash; and the sharpest break in the series, happening now.</p>
+        </div>
+        <div class="chart-card">
+          <div class="chart-top">
+            <div>
+              <h3 id="chart-title">U.S. share of Canadian merchandise exports</h3>
+              <p class="chart-sub" id="chart-sub">Monthly, January 2000 &ndash; June 2026. The U.S. took nearly 87 cents of every export dollar at the turn of the century.</p>
+            </div>
+            <div class="toggle" role="group" aria-label="Chart view">
+              <button type="button" id="btn-share" aria-pressed="true">U.S. share</button>
+              <button type="button" id="btn-nonus" aria-pressed="false">Beyond the U.S.</button>
+            </div>
+          </div>
+          <div class="chart-box" id="chart-box">
+            <svg id="bigchart" viewBox="0 0 960 430" role="img" aria-label="Line chart of the United States share of Canadian merchandise exports, 2000 to 2026, ending at 68 percent in June 2026"></svg>
+            <div class="tooltip" id="tooltip"></div>
+          </div>
+          <div class="chart-readout" id="chart-readout"></div>
+          <p class="src-note">Source: Statistics Canada, table 12-10-0011-01 (customs-based, seasonally adjusted). U.S. share computed from monthly export values; &ldquo;beyond the U.S.&rdquo; is total exports minus exports to the United States.</p>
+        </div>
+      </section>
+
+      <!-- ================= DEAL TRACKER ================= -->
+      <section aria-label="Trade deal tracker">
+        <div class="section-head">
+          <h2>Deal tracker</h2>
+          <p>Who has cut a deal with Washington, who is stuck, and who is still at the table.</p>
+          <span style="flex:1"></span>
+          <div class="filters" role="group" aria-label="Filter deals by status">
+            <button type="button" data-filter="all" aria-pressed="true">All</button>
+            <button type="button" data-filter="done" aria-pressed="false">Done</button>
+            <button type="button" data-filter="stuck" aria-pressed="false">Stuck</button>
+            <button type="button" data-filter="talks" aria-pressed="false">In talks</button>
+          </div>
+        </div>
+        <div class="deals" id="deals">
+          <article class="deal" data-status="done">
+            <div class="deal-top"><h3>Vietnam</h3><span class="pill done">Done</span></div>
+            <p>Deal agreed: <strong>20% tariff</strong> on Vietnamese goods entering the U.S., plus U.S. aircraft and farm product purchases. Final deal coming soon.</p>
+            <div class="deal-terms">40% tariff on transshipped goods</div>
+          </article>
+          <article class="deal" data-status="done">
+            <div class="deal-top"><h3>United Kingdom</h3><span class="pill done">Done</span></div>
+            <p>Deal <strong>sealed at the Kananaskis G7</strong>: lower tariffs on cars under a quota, exceptions for aerospace, and a commitment to negotiate pharma, steel and aluminum later.</p>
+            <div class="deal-terms">Cars &middot; aerospace &middot; more to negotiate</div>
+          </article>
+          <article class="deal" data-status="stuck">
+            <div class="deal-top"><h3>Japan</h3><span class="pill stuck">Stuck</span></div>
+            <p>The <strong>25% auto tariff is a dealbreaker</strong>. Trump is unhappy and threatening more tariffs; a U.S. ask to raise defence spending to 5% of GDP is also on the table.</p>
+            <div class="deal-terms">Autos &middot; defence spending</div>
+          </article>
+          <article class="deal" data-status="stuck">
+            <div class="deal-top"><h3>South Korea</h3><span class="pill stuck">Stuck</span></div>
+            <p>Still stuck &mdash; Seoul is debating <strong>dropping antitrust laws</strong> and increasing <strong>defence spending</strong> toward 5% of GDP (from 2.3%) to get a deal done.</p>
+            <div class="deal-terms">Antitrust &middot; defence spending</div>
+          </article>
+          <article class="deal" data-status="talks">
+            <div class="deal-top"><h3>India</h3><span class="pill talks">In talks</span></div>
+            <p>In a tough spot: U.S. demands on <strong>agriculture</strong> &mdash; especially genetically modified crops and dairy &mdash; are politically sensitive. India needs a win it can sell at home.</p>
+            <div class="deal-terms">Agriculture &middot; GM crops &middot; dairy</div>
+          </article>
+          <article class="deal" data-status="talks">
+            <div class="deal-top"><h3>European Union</h3><span class="pill talks">In talks</span></div>
+            <p>Moving cautiously: a possible deal on <strong>non-tariff barriers</strong> such as digital rules. If talks fail, <strong>retaliation is on the table</strong> &mdash; tariffs, or even a new trade club without the U.S.</p>
+            <div class="deal-terms">Non-tariff barriers &middot; retaliation possible</div>
+          </article>
+        </div>
+        <p class="section-note">Status as of the June 2026 edition &mdash; designed to be updated monthly.</p>
+      </section>
+
+      <!-- ================= TARIFF IMPACT PANEL ================= -->
+      <section aria-label="Tariff impact: steel and aluminum">
+        <div class="section-head">
+          <h2>Under fire: steel &amp; aluminum</h2>
+          <p>The 50% tariff, Canada&rsquo;s exposure, and what happened the last time Washington tried this.</p>
+        </div>
+        <div class="tariff">
+          <div class="tariff-left">
+            <div class="stat-pair">
+              <div class="sp-num red">50%</div>
+              <div class="sp-lab">U.S. tariff on imported steel, imposed by the Trump administration &mdash; with <strong>more products added</strong> to the list since, <strong>washing machines included</strong>.</div>
+            </div>
+            <div class="stat-pair">
+              <div class="sp-num">90%+</div>
+              <div class="sp-lab">of Canadian steel and aluminum exports go to <strong>the United States</strong> &mdash; which is why the impact will be felt so strongly at home.</div>
+            </div>
+          </div>
+          <div class="tariff-right">
+            <h3>The 2018 precedent</h3>
+            <p class="tr-sub">The last round of U.S. steel and aluminum tariffs pushed American prices up &mdash; and cost American jobs.</p>
+            <div class="brow">
+              <div class="b-lab">U.S. steel prices <span>effect of the 2018 tariffs</span></div>
+              <div class="b-track"><div class="b-fill" style="width:80%"></div></div>
+              <div class="b-val">+2.4%</div>
+            </div>
+            <div class="brow">
+              <div class="b-lab">U.S. aluminum prices <span>effect of the 2018 tariffs</span></div>
+              <div class="b-track"><div class="b-fill alu" style="width:86.7%"></div></div>
+              <div class="b-val">+2.6%</div>
+            </div>
+            <div class="brow b-axis" aria-hidden="true">
+              <div></div>
+              <div class="b-ticks"><span style="left:0">0%</span><span style="left:33.3%">1%</span><span style="left:66.7%">2%</span><span style="right:0">3%</span></div>
+              <div></div>
+            </div>
+            <div class="jobs-stat">
+              <div class="js-num">&minus;75,000</div>
+              <div class="js-lab"><strong>U.S. manufacturing jobs lost</strong> (approximately) in sectors that rely on steel and aluminum &mdash; the 2018 tariffs raised input costs for the very industries they were meant to protect.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <footer>
+        Figures: Business Council of Canada, The Trade Brief first edition (June 2026 data); trade series: StatCan. Prototype for illustration.
+      </footer>
+    </div>
+
+    <script>
+      (function(){
+        "use strict";
+
+        /* ============ Data: StatCan table 12-10-0011-01, customs-based, seasonally adjusted.
+           Monthly, Jan 2000 (index 0) - Jun 2026 (index 317). ============ */
+        var SHARE = [86.6,86.2,86.5,87.2,86.5,87.0,86.8,86.6,86.8,87.6,87.9,87.6,87.4,87.9,86.2,87.1,87.0,87.4,86.9,87.4,87.6,86.6,85.9,87.1,87.5,87.0,87.5,87.0,87.8,86.7,87.2,87.1,87.8,86.6,87.0,86.4,85.9,86.6,86.4,85.8,85.5,86.3,86.8,85.9,85.7,84.7,84.8,84.4,84.7,84.9,84.7,84.7,84.6,84.6,84.5,84.1,84.3,83.8,84.1,84.1,83.6,84.3,83.9,83.6,84.0,82.7,83.8,83.0,83.9,84.9,84.0,84.2,83.7,82.9,82.1,83.3,82.1,81.6,81.8,81.4,79.7,79.8,80.4,79.9,79.3,80.3,79.9,78.1,78.0,78.5,78.7,78.8,79.5,78.7,78.0,79.8,77.4,78.1,78.6,78.7,75.9,77.8,79.2,77.0,77.7,77.5,77.3,76.6,74.8,75.5,73.1,74.0,72.7,74.4,75.4,76.5,75.4,75.5,75.9,77.3,75.7,75.8,74.3,75.6,76.1,76.9,75.9,75.8,74.3,73.2,72.5,72.6,73.4,74.4,74.2,75.0,74.1,73.6,74.0,71.9,72.4,74.4,73.0,73.6,74.4,74.2,74.0,74.4,73.7,75.4,74.6,74.8,74.5,73.1,76.4,74.7,75.4,75.5,74.5,75.9,75.0,75.4,76.7,76.9,75.8,76.0,76.8,76.1,77.1,77.1,77.2,78.3,76.7,75.6,76.2,76.3,76.6,76.3,77.4,77.1,77.0,76.9,75.5,76.9,76.3,77.3,77.4,78.1,77.8,75.3,76.4,75.8,77.3,77.2,75.3,75.7,78.2,77.3,77.3,75.9,75.8,75.6,75.5,74.5,75.8,77.1,74.3,76.7,75.7,75.4,76.0,76.0,74.6,75.6,77.0,75.7,75.9,75.8,74.1,75.3,75.3,74.0,76.0,75.4,74.9,74.4,73.9,74.2,72.6,75.8,75.5,75.9,74.9,75.8,75.8,75.8,76.4,76.2,74.3,75.1,75.5,76.5,75.9,69.1,68.7,70.8,73.2,76.0,74.0,73.7,71.9,71.0,73.0,75.9,72.8,74.0,74.5,74.3,76.3,75.7,75.9,75.7,78.1,77.6,77.9,76.4,77.3,78.9,74.9,77.0,77.0,77.0,75.9,75.8,74.5,75.8,75.5,76.3,75.3,77.2,78.1,78.7,78.9,78.5,78.1,77.7,78.3,76.1,77.0,75.1,75.8,76.3,78.5,76.4,77.6,75.1,76.4,73.9,76.9,76.7,78.4,80.4,74.5,71.2,68.9,69.7,73.0,73.2,71.3,67.9,68.9,68.5,68.0,68.2,66.0,68.9,69.8,68.4];
+        var NONUS = [4.39,4.45,4.52,4.23,4.67,4.59,4.55,4.61,4.62,4.45,4.3,4.56,4.78,4.21,4.91,4.59,4.55,4.26,4.29,4.03,3.9,4.17,4.62,4.02,3.95,4.25,4.02,4.3,4.07,4.24,4.21,4.33,4.14,4.58,4.41,4.51,4.73,4.42,4.66,4.52,4.51,4.13,4.14,4.28,4.6,4.76,4.73,4.9,4.7,4.96,5.17,5.29,5.48,5.72,5.55,5.67,5.33,5.5,5.38,5.39,5.65,5.49,5.53,5.76,5.76,6.13,5.75,6.25,6.11,5.93,6.07,6.18,6.21,6.24,6.51,6.02,6.47,6.74,6.63,6.8,7.4,7.2,7.23,7.77,8.02,7.5,7.97,8.62,8.5,8.25,7.93,7.83,7.41,7.52,7.99,7.15,8.33,8.4,8.32,8.61,10.02,9.36,9.37,9.69,9.35,9.59,8.8,8.17,7.67,7.78,8.29,7.72,7.51,7.3,7.65,6.8,7.23,7.31,7.28,7.14,7.66,7.8,8.37,7.91,8.06,7.67,7.85,8.11,8.43,8.92,9.3,10.12,9.64,8.89,9.31,8.82,9.33,9.46,9.62,10.8,10.85,9.72,10.61,10.67,9.96,9.99,9.97,9.93,9.99,9.27,9.62,9.34,9.35,10.14,8.96,9.47,9.5,9.6,9.95,9.48,9.9,9.36,8.92,9.04,9.64,9.65,9.41,9.59,9.22,9.64,9.94,9.42,10.49,10.83,10.63,10.46,10.54,10.72,9.87,10.3,9.95,9.91,10.59,9.78,9.83,10.14,10.29,9.96,9.94,10.55,10.16,10.78,10.31,9.97,10.1,9.95,8.76,9.3,9.62,10.54,10.58,10.68,11.36,11.44,11.13,10.6,11.94,10.97,11.61,11.26,10.41,10.32,10.91,10.77,10.66,11.32,10.96,11.23,12.43,11.95,12.03,13.35,12.3,12.31,12.49,12.68,12.62,12.11,12.72,11.25,12.21,12.15,13.26,12.18,12.1,12.11,11.64,11.62,12.41,12.34,11.76,11.49,10.98,10.15,10.54,11.55,11.74,10.74,11.94,12.13,13.07,13.55,13.71,12.1,13.59,12.82,12.5,13.67,12.43,13.1,12.56,13.23,12.79,13.03,12.83,14.2,14.42,13.84,17.97,15.93,15.62,15.26,15.9,15.95,16.42,15.72,16.25,15.05,15.78,14.74,13.96,12.81,12.99,13.9,14.23,14.66,14.33,15.11,14.01,15.99,15.12,15.42,13.62,15.73,14.9,16.07,15.38,17.08,15.38,16.2,16.06,13.79,17.67,17.71,19.11,18.32,16.81,16.24,18.24,20.82,19.97,20.57,19.68,20.89,23.44,22.66,22.64,24.27];
+        var SPARK = [74.5,70.2,69.4,61.5,61.4,60.5,62.2,60.5,63.5,64.8,64.1,65.3,61.5,65.7,69.0,72.9,75.0,76.7]; /* monthly total exports C$B, Jan 2025-Jun 2026 */
+        var MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+        function monthLabel(i){ return MONTHS[i % 12] + " " + (2000 + Math.floor(i / 12)); }
+
+        var css = getComputedStyle(document.documentElement);
+        function v(name){ return css.getPropertyValue(name).trim(); }
+
+        /* ============ Sparkline ============ */
+        (function(){
+          var svg = document.getElementById("spark");
+          var W = 320, H = 84, pad = 6;
+          var min = Math.min.apply(null, SPARK), max = Math.max.apply(null, SPARK);
+          var lo = min - 2, hi = max + 2;
+          function X(i){ return pad + i * (W - 2 * pad) / (SPARK.length - 1); }
+          function Y(val){ return H - 10 - (val - lo) / (hi - lo) * (H - 22); }
+          var pts = SPARK.map(function(val, i){ return X(i).toFixed(1) + "," + Y(val).toFixed(1); }).join(" ");
+          var last = SPARK.length - 1;
+          svg.innerHTML =
+            '<polyline points="' + pts + '" fill="none" stroke="' + v("--red") + '" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>' +
+            '<circle cx="' + X(0) + '" cy="' + Y(SPARK[0]) + '" r="3" fill="' + v("--faint") + '"/>' +
+            '<circle cx="' + X(last) + '" cy="' + Y(SPARK[last]) + '" r="3.6" fill="' + v("--red") + '"/>' +
+            '<text x="' + X(0) + '" y="' + (H - 0) + '" font-size="9.5" fill="' + v("--faint") + '" font-family="IBM Plex Mono, monospace">C$' + SPARK[0].toFixed(1) + 'B</text>' +
+            '<text x="' + X(last) + '" y="' + (H - 0) + '" font-size="9.5" fill="' + v("--faint") + '" font-family="IBM Plex Mono, monospace" text-anchor="end">C$' + SPARK[last].toFixed(1) + 'B</text>';
+        })();
+
+        /* ============ Big diversification chart ============ */
+        var chartSvg = document.getElementById("bigchart");
+        var tooltip = document.getElementById("tooltip");
+        var readout = document.getElementById("chart-readout");
+        var titleEl = document.getElementById("chart-title");
+        var subEl = document.getElementById("chart-sub");
+        var W = 960, H = 430, ML = 58, MR = 20, MT = 34, MB = 38;
+        var PW = W - ML - MR, PH = H - MT - MB;
+        var view = "share";
+        var hoverIdx = -1;
+
+        var VIEWS = {
+          share: {
+            data: SHARE, color: "--red", yMin: 60, yMax: 90, ticks: [60, 70, 80, 90],
+            fmt: function(x){ return x.toFixed(1) + "%"; },
+            axisFmt: function(x){ return x + "%"; },
+            title: "U.S. share of Canadian merchandise exports",
+            sub: "Monthly, January 2000 \u2013 June 2026. The U.S. took nearly 87 cents of every export dollar at the turn of the century.",
+            aria: "Line chart of the United States share of Canadian merchandise exports, 2000 to 2026, ending at 68 percent in June 2026"
+          },
+          nonus: {
+            data: NONUS, color: "--teal", yMin: 0, yMax: 25, ticks: [0, 5, 10, 15, 20, 25],
+            fmt: function(x){ return "C$" + x.toFixed(1) + "B"; },
+            axisFmt: function(x){ return "$" + x + "B"; },
+            title: "Canadian exports to everywhere but the U.S.",
+            sub: "Monthly export value, January 2000 \u2013 June 2026. The Brief: exports to non-U.S. countries rose 5.7% in May to a record high, led by the U.K., Singapore and Italy.",
+            aria: "Line chart of Canadian exports to countries other than the United States, 2000 to 2026, reaching a record high in June 2026"
+          }
+        };
+
+        function X(i, n){ return ML + i * PW / (n - 1); }
+        function Y(val, cfg){ return MT + (cfg.yMax - val) / (cfg.yMax - cfg.yMin) * PH; }
+
+        function render(){
+          var cfg = VIEWS[view];
+          var d = cfg.data, n = d.length, col = v(cfg.color);
+          var s = "";
+          /* gridlines + y labels */
+          cfg.ticks.forEach(function(t){
+            var y = Y(t, cfg);
+            s += '<line x1="' + ML + '" y1="' + y + '" x2="' + (W - MR) + '" y2="' + y + '" stroke="' + v("--line") + '" stroke-width="1"/>' +
+                 '<text x="' + (ML - 10) + '" y="' + (y + 4) + '" text-anchor="end" font-size="12.5" fill="' + v("--muted") + '" font-family="IBM Plex Mono, monospace">' + cfg.axisFmt(t) + '</text>';
+          });
+          /* x labels every 5 years */
+          for (var yr = 2000; yr <= 2025; yr += 5){
+            var xi = X((yr - 2000) * 12, n);
+            s += '<text x="' + xi + '" y="' + (H - 12) + '" text-anchor="middle" font-size="12.5" fill="' + v("--muted") + '" font-family="IBM Plex Mono, monospace">' + yr + '</text>' +
+                 '<line x1="' + xi + '" y1="' + MT + '" x2="' + xi + '" y2="' + (MT + PH) + '" stroke="' + v("--line") + '" stroke-width="1" opacity="0.55"/>';
+          }
+          /* the line */
+          var pts = d.map(function(val, i){ return X(i, n).toFixed(1) + "," + Y(val, cfg).toFixed(1); }).join(" ");
+          s += '<polyline points="' + pts + '" fill="none" stroke="' + col + '" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"/>';
+          /* first + last points */
+          s += '<circle cx="' + X(0, n) + '" cy="' + Y(d[0], cfg) + '" r="3.5" fill="' + v("--faint") + '"/>';
+          var lx = X(n - 1, n), ly = Y(d[n - 1], cfg);
+          s += '<circle cx="' + lx + '" cy="' + ly + '" r="5.5" fill="' + col + '" stroke="' + v("--card") + '" stroke-width="2.5"/>';
+          /* annotations */
+          var halo = '" style="paint-order:stroke" stroke="' + v("--card") + '" stroke-width="4" stroke-linejoin="round';
+          if (view === "share"){
+            s += '<text x="' + X(0, n) + '" y="50" font-size="13" font-weight="700" fill="' + v("--muted") + halo + '">2000 \u00B7 87%</text>';
+            s += '<line x1="' + (lx - 5) + '" y1="' + (ly - 6) + '" x2="' + (lx - 58) + '" y2="118" stroke="' + col + '" stroke-width="1.4"/>' +
+                 '<text x="' + (lx - 64) + '" y="70" text-anchor="end" font-size="19" font-weight="800" fill="' + v("--ink") + halo + '">68% \u2014 one of the lowest</text>' +
+                 '<text x="' + (lx - 64) + '" y="92" text-anchor="end" font-size="19" font-weight="800" fill="' + v("--ink") + halo + '">ever recorded</text>' +
+                 '<text x="' + (lx - 64) + '" y="112" text-anchor="end" font-size="12.5" fill="' + v("--muted") + halo + '">June 2026 \u00B7 U.S. share of exports</text>';
+          } else {
+            s += '<line x1="' + (lx - 5) + '" y1="' + (ly + 5) + '" x2="' + (lx - 92) + '" y2="' + (ly + 30) + '" stroke="' + col + '" stroke-width="1.4"/>' +
+                 '<text x="' + (lx - 100) + '" y="' + (ly + 26) + '" text-anchor="end" font-size="19" font-weight="800" fill="' + v("--ink") + halo + '">Record high</text>' +
+                 '<text x="' + (lx - 100) + '" y="' + (ly + 48) + '" text-anchor="end" font-size="12.5" fill="' + v("--muted") + halo + '">June 2026 \u00B7 C$24.3B in one month</text>';
+          }
+          /* hover marker */
+          if (hoverIdx >= 0){
+            var hx = X(hoverIdx, n), hy = Y(d[hoverIdx], cfg);
+            s += '<line x1="' + hx + '" y1="' + MT + '" x2="' + hx + '" y2="' + (MT + PH) + '" stroke="' + v("--faint") + '" stroke-width="1" stroke-dasharray="3 3"/>' +
+                 '<circle cx="' + hx + '" cy="' + hy + '" r="5" fill="' + v("--card") + '" stroke="' + col + '" stroke-width="2.6"/>';
+          }
+          /* capture layer */
+          s += '<rect id="capture" x="' + ML + '" y="' + MT + '" width="' + PW + '" height="' + PH + '" fill="transparent"/>';
+          chartSvg.innerHTML = s;
+          chartSvg.setAttribute("aria-label", cfg.aria);
+          titleEl.textContent = cfg.title;
+          subEl.textContent = cfg.sub;
+          updateReadout();
+          bindCapture();
+        }
+
+        function updateReadout(){
+          if (view === "share"){
+            readout.innerHTML =
+              '<span><b>68%</b> of exports went to the U.S. in June 2026</span>' +
+              '<span>Peak era: <b>~87%</b> (2000&ndash;02)</span>' +
+              '<span>2024 average: <b>76.3%</b></span>' +
+              '<span>Series low: <b>66.0%</b> (Mar 2026)</span>';
+          } else {
+            readout.innerHTML =
+              '<span><b>+5.7%</b> in May &mdash; a record high (per the Brief)</span>' +
+              '<span>Led by the <b>U.K., Singapore and Italy</b></span>' +
+              '<span>June 2026: <b>C$24.3B</b>, the highest month in the series</span>' +
+              '<span>The catch: gains still don&rsquo;t offset U.S. losses</span>';
+          }
+        }
+
+        function bindCapture(){
+          var cap = document.getElementById("capture");
+          if (!cap) return;
+          function move(evt){
+            var rect = chartSvg.getBoundingClientRect();
+            var px = (evt.clientX - rect.left) / rect.width * W;
+            var cfg = VIEWS[view], n = cfg.data.length;
+            var idx = Math.round((px - ML) / PW * (n - 1));
+            idx = Math.max(0, Math.min(n - 1, idx));
+            if (idx !== hoverIdx){
+              hoverIdx = idx;
+              render();
+            }
+            tooltip.innerHTML = '<div class="tt-when">' + monthLabel(idx) + '</div><div class="tt-val">' + cfg.fmt(cfg.data[idx]) + '</div>';
+            tooltip.style.left = (X(idx, n) / W * 100) + "%";
+            tooltip.style.top = (Y(cfg.data[idx], cfg) / H * 100) + "%";
+            tooltip.style.opacity = "1";
+          }
+          cap.addEventListener("mousemove", move);
+          cap.addEventListener("touchmove", function(e){ if (e.touches.length){ move(e.touches[0]); } }, { passive: true });
+          cap.addEventListener("mouseleave", function(){
+            hoverIdx = -1; tooltip.style.opacity = "0"; render();
+          });
+        }
+
+        document.getElementById("btn-share").addEventListener("click", function(){
+          view = "share"; hoverIdx = -1; tooltip.style.opacity = "0";
+          this.setAttribute("aria-pressed", "true");
+          document.getElementById("btn-nonus").setAttribute("aria-pressed", "false");
+          render();
+        });
+        document.getElementById("btn-nonus").addEventListener("click", function(){
+          view = "nonus"; hoverIdx = -1; tooltip.style.opacity = "0";
+          this.setAttribute("aria-pressed", "true");
+          document.getElementById("btn-share").setAttribute("aria-pressed", "false");
+          render();
+        });
+
+        render();
+
+        /* re-render on light/dark switch so SVG picks up token colors */
+        if (window.matchMedia){
+          var mq = window.matchMedia("(prefers-color-scheme: dark)");
+          var onChange = function(){
+            css = getComputedStyle(document.documentElement);
+            render();
+            /* redraw sparkline colors */
+            var sp = document.querySelectorAll("#spark polyline, #spark circle");
+            if (sp.length){ sp[0].setAttribute("stroke", v("--red")); }
+          };
+          if (mq.addEventListener) mq.addEventListener("change", onChange);
+          else if (mq.addListener) mq.addListener(onChange);
+        }
+
+        /* ============ Deal tracker filter ============ */
+        var filterBtns = document.querySelectorAll(".filters button");
+        var dealCards = document.querySelectorAll(".deal");
+        filterBtns.forEach(function(btn){
+          btn.addEventListener("click", function(){
+            filterBtns.forEach(function(b){ b.setAttribute("aria-pressed", "false"); });
+            btn.setAttribute("aria-pressed", "true");
+            var f = btn.getAttribute("data-filter");
+            dealCards.forEach(function(card){
+              var show = (f === "all" || card.getAttribute("data-status") === f);
+              card.classList.toggle("dim", !show);
+            });
+          });
+        });
+      })();
+    </script>
+  </body>
+</html>
